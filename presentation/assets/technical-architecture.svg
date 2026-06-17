@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 960" role="img" aria-labelledby="title desc">
+  <title id="title">Fabric IQ Mini Hack technical architecture</title>
+  <desc id="desc">Technical architecture showing the Fabric workspace components, data pipeline, ontology, agent, and governance surfaces.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fbf5e8"/>
+      <stop offset="100%" stop-color="#edf6f4"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="10" flood-color="#17324d" flood-opacity="0.18"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1f4e5f"/>
+    </marker>
+    <style>
+      .workspace { fill: url(#bg); stroke: #1f4e5f; stroke-width: 3; rx: 30; }
+      .card { fill: #fffdfa; stroke: #1f4e5f; stroke-width: 3; rx: 24; filter: url(#shadow); }
+      .warm { fill: #fff6df; stroke: #9b6a27; stroke-width: 3; rx: 24; filter: url(#shadow); }
+      .cool { fill: #eaf4ff; stroke: #4b78a8; stroke-width: 3; rx: 24; filter: url(#shadow); }
+      .data { fill: #dff1ef; stroke: #25736a; stroke-width: 3; rx: 24; filter: url(#shadow); }
+      .title { font: 700 38px 'Segoe UI Variable', 'Aptos', sans-serif; fill: #15354b; }
+      .subtitle { font: 500 20px 'Segoe UI Variable', 'Aptos', sans-serif; fill: #36556a; }
+      .head { font: 700 26px 'Segoe UI Variable', 'Aptos', sans-serif; fill: #15354b; }
+      .body { font: 500 18px 'Segoe UI Variable', 'Aptos', sans-serif; fill: #35576b; }
+      .note { font: 600 17px 'Segoe UI Variable', 'Aptos', sans-serif; fill: #35576b; }
+      .flow { stroke: #1f4e5f; stroke-width: 4; fill: none; marker-end: url(#arrow); stroke-linecap: round; }
+      .dashed { stroke-dasharray: 10 10; }
+    </style>
+  </defs>
+
+  <rect x="16" y="16" width="1568" height="928" class="workspace"/>
+  <text x="800" y="68" text-anchor="middle" class="title">Fabric IQ Mini Hack: Technical Architecture</text>
+  <text x="800" y="104" text-anchor="middle" class="subtitle">Managed Microsoft Fabric workspace with notebook, metadata, ontology, and agent surfaces</text>
+
+  <rect x="60" y="138" width="300" height="180" class="card"/>
+  <text x="210" y="186" text-anchor="middle" class="head">Source Data</text>
+  <text x="210" y="222" text-anchor="middle" class="body">NYC Taxi parquet or CSV extracts</text>
+  <text x="210" y="254" text-anchor="middle" class="body">Reference tables for zones, payment types,</text>
+  <text x="210" y="282" text-anchor="middle" class="body">rate codes, and derived dimensions</text>
+
+  <rect x="420" y="138" width="330" height="180" class="data"/>
+  <text x="585" y="186" text-anchor="middle" class="head">Lakehouse</text>
+  <text x="585" y="222" text-anchor="middle" class="body">Delta tables loaded by notebook step 01</text>
+  <text x="585" y="254" text-anchor="middle" class="body">`trips`, `zones`, `payment_types`, `rate_codes`</text>
+  <text x="585" y="282" text-anchor="middle" class="body">plus curated dimension and rule tables</text>
+
+  <rect x="810" y="138" width="330" height="180" class="cool"/>
+  <text x="975" y="186" text-anchor="middle" class="head">Notebook + SQL Layer</text>
+  <text x="975" y="222" text-anchor="middle" class="body">Technical and semantic notebooks</text>
+  <text x="975" y="254" text-anchor="middle" class="body">Data profiling, descriptions, metric views</text>
+  <text x="975" y="282" text-anchor="middle" class="body">Optional Power BI semantic model path</text>
+
+  <rect x="1200" y="138" width="330" height="180" class="warm"/>
+  <text x="1365" y="186" text-anchor="middle" class="head">Ontology Item</text>
+  <text x="1365" y="222" text-anchor="middle" class="body">Trip, Zone, PaymentType, RateCode</text>
+  <text x="1365" y="254" text-anchor="middle" class="body">Relationships, classifications, business rules</text>
+  <text x="1365" y="282" text-anchor="middle" class="body">Visual graph exploration and GQL queries</text>
+
+  <rect x="240" y="418" width="380" height="200" class="cool"/>
+  <text x="430" y="466" text-anchor="middle" class="head">Metadata and Governance</text>
+  <text x="430" y="502" text-anchor="middle" class="body">Table descriptions</text>
+  <text x="430" y="532" text-anchor="middle" class="body">Column annotations</text>
+  <text x="430" y="562" text-anchor="middle" class="body">Business glossary style context</text>
+  <text x="430" y="592" text-anchor="middle" class="body">Semantic consistency checks</text>
+
+  <rect x="690" y="418" width="380" height="200" class="warm"/>
+  <text x="880" y="466" text-anchor="middle" class="head">Reasoning Context</text>
+  <text x="880" y="502" text-anchor="middle" class="body">Prompt instructions and business caveats</text>
+  <text x="880" y="532" text-anchor="middle" class="body">Cash tip data gap</text>
+  <text x="880" y="562" text-anchor="middle" class="body">Airport flat rate behavior</text>
+  <text x="880" y="592" text-anchor="middle" class="body">Trip classification and time patterns</text>
+
+  <rect x="1140" y="418" width="320" height="200" class="card"/>
+  <text x="1300" y="466" text-anchor="middle" class="head">Fabric Data Agent</text>
+  <text x="1300" y="502" text-anchor="middle" class="body">Chat interface for analysts and judges</text>
+  <text x="1300" y="532" text-anchor="middle" class="body">Grounded responses using ontology</text>
+  <text x="1300" y="562" text-anchor="middle" class="body">and semantic definitions</text>
+  <text x="1300" y="592" text-anchor="middle" class="body">No custom backend required</text>
+
+  <rect x="350" y="700" width="900" height="160" class="data"/>
+  <text x="800" y="750" text-anchor="middle" class="head">Operational Outcome</text>
+  <text x="800" y="788" text-anchor="middle" class="body">One managed Fabric workspace supports ingestion, documentation, metrics, ontology, and AI access</text>
+  <text x="800" y="820" text-anchor="middle" class="note">Good fit for hackathon delivery: low infrastructure overhead, fast demo path, strong explainability story</text>
+
+  <path d="M360 228 L416 228" class="flow"/>
+  <path d="M750 228 L806 228" class="flow"/>
+  <path d="M1140 228 L1196 228" class="flow"/>
+  <path d="M585 320 C585 360 430 372 430 414" class="flow"/>
+  <path d="M975 320 L975 414" class="flow"/>
+  <path d="M1365 320 C1365 364 1300 374 1300 414" class="flow"/>
+  <path d="M620 516 L686 516" class="flow dashed"/>
+  <path d="M1070 516 L1136 516" class="flow"/>
+  <path d="M1300 620 L1300 694" class="flow"/>
+  <path d="M880 620 L880 694" class="flow"/>
+  <path d="M430 620 L430 694" class="flow"/>
+</svg>

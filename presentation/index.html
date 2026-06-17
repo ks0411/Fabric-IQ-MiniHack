@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fabric IQ Mini Hack Presentation</title>
+  <style>
+    :root {
+      --ink: #17324d;
+      --muted: #41617d;
+      --paper: #fcf9f2;
+      --panel: rgba(255, 253, 248, 0.84);
+      --line: rgba(23, 50, 77, 0.14);
+      --gold: #a86c20;
+      --sky: #2f6b9a;
+      --sea: #2f766f;
+      --shadow: 0 22px 60px rgba(23, 50, 77, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top left, rgba(234, 201, 151, 0.4), transparent 30%),
+        radial-gradient(circle at top right, rgba(122, 171, 214, 0.26), transparent 28%),
+        linear-gradient(135deg, #f6f0e4 0%, #edf3f7 42%, #f8f4eb 100%);
+      color: var(--ink);
+      font-family: "Aptos", "Segoe UI Variable", "Segoe UI", sans-serif;
+    }
+
+    body {
+      overflow: hidden;
+    }
+
+    .deck {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      transition: transform 320ms ease;
+    }
+
+    .slide {
+      min-width: 100vw;
+      height: 100vh;
+      padding: 56px 64px 72px;
+      position: relative;
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: 24px;
+      border: 1px solid var(--line);
+      border-radius: 32px;
+      pointer-events: none;
+    }
+
+    .surface {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      background: var(--panel);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.42);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: 44px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .kicker {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    h1,
+    h2,
+    h3,
+    p,
+    ul {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(2.7rem, 5vw, 5rem);
+      line-height: 0.96;
+      max-width: 10ch;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 3vw, 3.2rem);
+      line-height: 1.05;
+      max-width: 14ch;
+    }
+
+    h3 {
+      font-size: 1.15rem;
+      letter-spacing: 0.02em;
+    }
+
+    .lede {
+      font-size: 1.3rem;
+      line-height: 1.45;
+      max-width: 56rem;
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .card {
+      background: rgba(255,255,255,0.58);
+      border: 1px solid rgba(23, 50, 77, 0.12);
+      border-radius: 22px;
+      padding: 22px 24px;
+      box-shadow: 0 12px 26px rgba(23, 50, 77, 0.08);
+    }
+
+    .card strong {
+      display: block;
+      font-size: 1.05rem;
+      margin-bottom: 10px;
+    }
+
+    .card p,
+    .card li {
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .hero-layout {
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 28px;
+      align-items: stretch;
+      flex: 1;
+    }
+
+    .hero-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 22px;
+    }
+
+    .metric-band {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .metric {
+      padding: 18px 18px 20px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.62);
+      border: 1px solid rgba(23, 50, 77, 0.12);
+    }
+
+    .metric .value {
+      font-size: 2rem;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .metric .label {
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .tag-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-content: flex-start;
+    }
+
+    .tag {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(23, 50, 77, 0.08);
+      color: var(--ink);
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .diagram {
+      width: 100%;
+      max-height: 68vh;
+      object-fit: contain;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.64);
+      border: 1px solid rgba(23, 50, 77, 0.12);
+      padding: 14px;
+      box-shadow: 0 12px 26px rgba(23, 50, 77, 0.08);
+    }
+
+    .caption-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .two-column {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 24px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .list {
+      padding-left: 20px;
+      color: var(--muted);
+      line-height: 1.5;
+      display: grid;
+      gap: 10px;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .step {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.58);
+      border: 1px solid rgba(23, 50, 77, 0.12);
+      min-height: 150px;
+    }
+
+    .step .num {
+      font-weight: 800;
+      color: var(--gold);
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .footer-nav {
+      position: fixed;
+      right: 26px;
+      bottom: 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 5;
+    }
+
+    .footer-nav button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      color: white;
+      background: var(--ink);
+      box-shadow: 0 10px 24px rgba(23, 50, 77, 0.2);
+    }
+
+    .footer-nav button:disabled {
+      opacity: 0.45;
+      cursor: default;
+    }
+
+    .dots {
+      display: flex;
+      gap: 8px;
+      margin: 0 8px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(23, 50, 77, 0.2);
+    }
+
+    .dot.active {
+      background: var(--gold);
+      transform: scale(1.25);
+    }
+
+    .slide-count {
+      min-width: 56px;
+      text-align: center;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    a {
+      color: var(--sky);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .mini-note {
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    @media (max-width: 1100px) {
+      body {
+        overflow: auto;
+      }
+
+      .deck {
+        display: block;
+        width: auto;
+        height: auto;
+        transform: none !important;
+      }
+
+      .slide {
+        min-width: auto;
+        height: auto;
+        padding: 24px 16px 40px;
+      }
+
+      .surface {
+        height: auto;
+        min-height: calc(100vh - 80px);
+        padding: 28px 22px;
+      }
+
+      .hero-layout,
+      .two-column,
+      .grid-2,
+      .grid-3,
+      .timeline,
+      .metric-band {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-nav {
+        position: static;
+        justify-content: center;
+        padding: 0 0 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck" id="deck">
+    <section class="slide">
+      <div class="surface">
+        <div class="kicker">Mini Hack Presentation</div>
+        <div class="hero-layout">
+          <div class="hero-panel">
+            <div>
+              <h1>Fabric IQ Mini Hack</h1>
+              <p class="lede">A Microsoft Fabric mini hack that demonstrates how semantic models and ontologies turn correct metrics into explainable AI answers.</p>
+            </div>
+            <div class="metric-band">
+              <div class="metric">
+                <span class="value">2.76M</span>
+                <span class="label">NYC taxi trip records form the analytical base.</span>
+              </div>
+              <div class="metric">
+                <span class="value">3</span>
+                <span class="label">Core layers: technical, semantic, and ontology.</span>
+              </div>
+              <div class="metric">
+                <span class="value">1</span>
+                <span class="label">Fabric Data Agent provides the business-facing experience.</span>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <strong>Audience fit</strong>
+            <div class="tag-cloud">
+              <span class="tag">Fabric judges</span>
+              <span class="tag">Analysts</span>
+              <span class="tag">Data engineers</span>
+              <span class="tag">AI builders</span>
+              <span class="tag">Semantic modelers</span>
+              <span class="tag">Hackathon reviewers</span>
+            </div>
+            <div style="height: 16px"></div>
+            <strong>Core message</strong>
+            <p>The demo is not just about answering a question. It is about preventing a confident but wrong answer by giving the AI explicit business meaning.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="surface">
+        <div class="kicker">Thorough Check</div>
+        <h2>What the repo already proves</h2>
+        <div class="grid grid-3">
+          <div class="card">
+            <strong>End-to-end flow exists</strong>
+            <p>The repo covers the full path from lakehouse creation through ontology enrichment, agent setup, query validation, and architecture reflection.</p>
+          </div>
+          <div class="card">
+            <strong>Dual delivery mode</strong>
+            <p>It supports both code-first and UI-first workshop paths, which is strong for a hackathon demo because it broadens your audience.</p>
+          </div>
+          <div class="card">
+            <strong>Business-value story is clear</strong>
+            <p>The strongest differentiator is the cash-tip caveat: the ontology prevents a plausible but misleading narrative from the AI.</p>
+          </div>
+          <div class="card">
+            <strong>Logical completeness</strong>
+            <p>The repo already contains technical metadata, semantic metrics, ontology relationships, agent instructions, and test prompts.</p>
+          </div>
+          <div class="card">
+            <strong>Demo strength</strong>
+            <p>The before-and-after agent comparison is presentation-ready and should be a centerpiece of your judging story.</p>
+          </div>
+          <div class="card">
+            <strong>Current gap to polish</strong>
+            <p>The materials are workshop-shaped rather than pitch-shaped, so this presentation packages them into a faster executive narrative.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="surface">
+        <div class="kicker">Problem Statement</div>
+        <h2>Why this mini hack matters</h2>
+        <div class="two-column">
+          <div class="card">
+            <strong>The analytics gap</strong>
+            <ul class="list">
+              <li>Traditional BI tells users what happened and how a measure was calculated.</li>
+              <li>It usually does not explain whether the underlying pattern is trustworthy.</li>
+              <li>Agents without business context can return elegant but wrong explanations.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <strong>The Fabric IQ answer</strong>
+            <ul class="list">
+              <li>Keep the data and metric logic in Fabric.</li>
+              <li>Add ontology entities, relationships, and business caveats.</li>
+              <li>Ground the Fabric Data Agent in those rules so it can explain why a pattern appears and when not to trust first-glance numbers.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="surface">
+        <div class="kicker">Logical Architecture</div>
+        <h2>How meaning flows into the answer</h2>
+        <img class="diagram" src="assets/logical-architecture.svg" alt="Logical architecture diagram for Fabric IQ Mini Hack">
+        <div class="caption-row">
+          <p>The semantic layer computes reusable numbers, the ontology layer explains those numbers, and the data agent combines both into business-ready answers.</p>
+          <p><a href="excalidraw/fabric-iq-logical-architecture.excalidraw">Open Excalidraw source</a></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="surface">
+        <div class="kicker">Technical Architecture</div>
+        <h2>How the Fabric components fit together</h2>
+        <img class="diagram" src="assets/technical-architecture.svg" alt="Technical architecture diagram for Fabric IQ Mini Hack">
+        <div class="caption-row">
+          <p>This design keeps delivery lightweight: managed Fabric services, notebook-driven preparation, ontology modeling, and a native data agent experience.</p>
+          <p><a href="excalidraw/fabric-iq-technical-architecture.excalidraw">Open Excalidraw source</a></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="surface">
+        <div class="kicker">Execution Story</div>
+        <h2>Suggested mini hack flow</h2>
+        <div class="timeline">
+          <div class="step">
+            <span class="num">01</span>
+            <strong>Load the data</strong>
+            <p>Build the lakehouse and populate the taxi and reference tables.</p>
+          </div>
+          <div class="step">
+            <span class="num">02</span>
+            <strong>Document the assets</strong>
+            <p>Add descriptions and data profiling so the platform knows what exists.</p>
+          </div>
+          <div class="step">
+            <span class="num">03</span>
+            <strong>Define metrics</strong>
+            <p>Create Spark SQL views or Power BI measures for consistent calculations.</p>
+          </div>
+          <div class="step">
+            <span class="num">04</span>
+            <strong>Model meaning</strong>
+            <p>Create ontology entities, relationships, and rule context.</p>
+          </div>
+          <div class="step">
+            <span class="num">05</span>
+            <strong>Demo the agent</strong>
+            <p>Show the difference between naive answers and ontology-grounded answers.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="surface">
+        <div class="kicker">Demo Proof</div>
+        <h2>The killer use case for judges</h2>
+        <div class="grid grid-2">
+          <div class="card">
+            <strong>Naive question</strong>
+            <p>Why are tips lower in Brooklyn than Manhattan?</p>
+            <div style="height: 14px"></div>
+            <strong>Risk without ontology</strong>
+            <p>The AI invents plausible narratives about rider behavior or service quality.</p>
+          </div>
+          <div class="card">
+            <strong>Grounded answer</strong>
+            <p>The ontology and agent instructions explain that cash trips do not record tips, so lower recorded tips do not automatically mean worse tipping behavior.</p>
+          </div>
+        </div>
+        <div class="card">
+          <strong>Why this lands in a hackathon</strong>
+          <p>You are not just showing a chart or an agent. You are showing a governance and trust pattern for enterprise AI analytics inside Fabric.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="surface">
+        <div class="kicker">Strengths and Constraints</div>
+        <h2>What to say clearly in the presentation</h2>
+        <div class="grid grid-2">
+          <div class="card">
+            <strong>Strengths</strong>
+            <ul class="list">
+              <li>Managed Fabric environment keeps delivery fast.</li>
+              <li>Semantic and ontology layers stay close to the governed data.</li>
+              <li>Visual graph exploration helps non-engineers understand the model.</li>
+              <li>The before/after agent test makes business impact obvious.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <strong>Constraints</strong>
+            <ul class="list">
+              <li>Fabric ontology preview does not provide formal reasoning or constraint validation.</li>
+              <li>Some rules still live in agent instructions rather than first-class queryable artifacts.</li>
+              <li>Large graph entities may be less pleasant to explore interactively.</li>
+              <li>This is excellent for explainability; it is not yet a full knowledge-graph platform replacement.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="surface">
+        <div class="kicker">Presentation Close</div>
+        <h2>Winning message</h2>
+        <div class="grid grid-2">
+          <div class="card">
+            <strong>One-sentence pitch</strong>
+            <p>Fabric IQ Mini Hack shows how to move from reporting numbers to delivering AI answers that know when the numbers can mislead.</p>
+          </div>
+          <div class="card">
+            <strong>Recommended close</strong>
+            <p>“We are using Microsoft Fabric not only as a data platform, but as the place where business meaning becomes operational for AI.”</p>
+          </div>
+        </div>
+        <p class="mini-note">Files included here: two rendered SVG diagrams, two Excalidraw-compatible sources, and this self-contained presentation HTML.</p>
+      </div>
+    </section>
+  </main>
+
+  <div class="footer-nav">
+    <button id="prev" type="button">Prev</button>
+    <div class="slide-count" id="count">1 / 8</div>
+    <div class="dots" id="dots"></div>
+    <button id="next" type="button">Next</button>
+  </div>
+
+  <script>
+    const deck = document.getElementById('deck');
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const prev = document.getElementById('prev');
+    const next = document.getElementById('next');
+    const count = document.getElementById('count');
+    const dots = document.getElementById('dots');
+    let index = 0;
+
+    slides.forEach((_, idx) => {
+      const dot = document.createElement('span');
+      dot.className = 'dot';
+      dot.addEventListener('click', () => goTo(idx));
+      dots.appendChild(dot);
+    });
+
+    function render() {
+      if (window.innerWidth > 1100) {
+        deck.style.transform = `translateX(-${index * 100}vw)`;
+      }
+      count.textContent = `${index + 1} / ${slides.length}`;
+      prev.disabled = index === 0;
+      next.disabled = index === slides.length - 1;
+      Array.from(dots.children).forEach((dot, idx) => {
+        dot.classList.toggle('active', idx === index);
+      });
+    }
+
+    function goTo(target) {
+      index = Math.max(0, Math.min(slides.length - 1, target));
+      render();
+    }
+
+    prev.addEventListener('click', () => goTo(index - 1));
+    next.addEventListener('click', () => goTo(index + 1));
+
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') {
+        goTo(index + 1);
+      }
+      if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+        goTo(index - 1);
+      }
+      if (event.key === 'Home') {
+        goTo(0);
+      }
+      if (event.key === 'End') {
+        goTo(slides.length - 1);
+      }
+    });
+
+    window.addEventListener('resize', render);
+    render();
+  </script>
+</body>
+</html>
