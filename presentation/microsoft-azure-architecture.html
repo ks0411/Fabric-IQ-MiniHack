@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fabric IQ Mini Hack Architecture Diagram</title>
+  <style>
+    :root {
+      --ink: #17324d;
+      --muted: #536d84;
+      --line: #bdd0e3;
+      --panel: #ffffff;
+      --panel-soft: #f4f8fb;
+      --accent: #0f6cbd;
+      --accent-soft: #d7ebff;
+      --fabric-soft: #f8f2ff;
+      --azure-soft: #eef6ff;
+      --data-soft: #edf8f4;
+      --shadow: 0 18px 46px rgba(23, 50, 77, 0.14);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI Variable", "Aptos", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(43, 109, 192, 0.14), transparent 28%),
+        radial-gradient(circle at top right, rgba(110, 75, 176, 0.12), transparent 24%),
+        linear-gradient(180deg, #f5f9fc 0%, #eef4f8 100%);
+      color: var(--ink);
+    }
+
+    .page {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 32px;
+    }
+
+    .header {
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      line-height: 1.02;
+    }
+
+    .subtitle {
+      margin-top: 12px;
+      max-width: 76rem;
+      color: var(--muted);
+      font-size: 1.1rem;
+      line-height: 1.5;
+    }
+
+    .diagram-shell {
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid rgba(23, 50, 77, 0.08);
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      padding: 26px;
+      overflow: hidden;
+    }
+
+    .diagram {
+      position: relative;
+      min-height: 930px;
+      border-radius: 24px;
+      background:
+        linear-gradient(180deg, rgba(15, 108, 189, 0.04), rgba(15, 108, 189, 0.01)),
+        linear-gradient(90deg, rgba(83, 109, 132, 0.05) 1px, transparent 1px),
+        linear-gradient(rgba(83, 109, 132, 0.05) 1px, transparent 1px);
+      background-size: auto, 28px 28px, 28px 28px;
+      padding: 28px;
+    }
+
+    .zone {
+      position: absolute;
+      border-radius: 28px;
+      border: 1px solid rgba(23, 50, 77, 0.09);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.72);
+    }
+
+    .zone.fabric {
+      left: 160px;
+      right: 160px;
+      top: 120px;
+      height: 670px;
+      background: linear-gradient(180deg, rgba(216, 234, 255, 0.78), rgba(248, 242, 255, 0.88));
+    }
+
+    .zone-title {
+      position: absolute;
+      top: 18px;
+      left: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+
+    .zone-title img {
+      width: 40px;
+      height: 40px;
+    }
+
+    .node {
+      position: absolute;
+      width: 220px;
+      min-height: 152px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 18px 18px 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 2;
+    }
+
+    .node.small {
+      min-height: 134px;
+    }
+
+    .node .icon {
+      width: 54px;
+      height: 54px;
+      object-fit: contain;
+    }
+
+    .node h2 {
+      margin: 0;
+      font-size: 1.08rem;
+      line-height: 1.15;
+    }
+
+    .node p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .node.source {
+      left: 28px;
+      top: 312px;
+      background: #fffdf8;
+    }
+
+    .node.workspace {
+      left: 224px;
+      top: 164px;
+      width: 240px;
+      background: var(--panel-soft);
+    }
+
+    .node.lakehouse {
+      left: 224px;
+      top: 400px;
+      background: #f3fcf9;
+    }
+
+    .node.notebook {
+      left: 492px;
+      top: 188px;
+      background: #f6fbff;
+    }
+
+    .node.semantic {
+      left: 492px;
+      top: 424px;
+      background: #f7fbff;
+    }
+
+    .node.ontology {
+      left: 758px;
+      top: 188px;
+      background: #fbf7ff;
+    }
+
+    .node.agent {
+      left: 758px;
+      top: 424px;
+      background: #fbf7ff;
+    }
+
+    .node.openai {
+      right: 28px;
+      top: 312px;
+      background: var(--azure-soft);
+    }
+
+    .outcome {
+      position: absolute;
+      left: 318px;
+      right: 318px;
+      bottom: 34px;
+      min-height: 96px;
+      background: #f4fbf8;
+      border: 1px solid #c8ddd3;
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px 28px;
+      text-align: center;
+      z-index: 2;
+    }
+
+    .outcome strong {
+      display: block;
+      font-size: 1.15rem;
+      margin-bottom: 6px;
+    }
+
+    .outcome span {
+      color: var(--muted);
+      font-size: 0.98rem;
+      line-height: 1.45;
+    }
+
+    svg.wires {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      overflow: visible;
+    }
+
+    .wire {
+      fill: none;
+      stroke: #6a87a2;
+      stroke-width: 3.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .wire-label {
+      font-family: "Segoe UI Variable", "Aptos", sans-serif;
+      font-size: 14px;
+      fill: #4c6880;
+      font-weight: 600;
+    }
+
+    .legend {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chip {
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .chip.fabric {
+      background: #8c5cff;
+    }
+
+    .chip.azure {
+      background: #0f6cbd;
+    }
+
+    .chip.data {
+      background: #2d8f67;
+    }
+
+    .footnote {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 1200px) {
+      .diagram {
+        min-height: 1500px;
+      }
+
+      .zone.fabric {
+        left: 20px;
+        right: 20px;
+        top: 160px;
+        height: 1120px;
+      }
+
+      .node.source,
+      .node.workspace,
+      .node.lakehouse,
+      .node.notebook,
+      .node.semantic,
+      .node.ontology,
+      .node.agent,
+      .node.openai,
+      .outcome {
+        position: relative;
+        left: auto;
+        right: auto;
+        top: auto;
+        bottom: auto;
+        width: auto;
+        margin-bottom: 18px;
+      }
+
+      .diagram {
+        display: grid;
+        gap: 18px;
+      }
+
+      svg.wires {
+        display: none;
+      }
+
+      .outcome {
+        margin-top: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <div class="eyebrow">Official Microsoft Visuals</div>
+      <h1>Fabric IQ Mini Hack Architecture Diagram</h1>
+      <p class="subtitle">This version uses official Microsoft Fabric and Azure SVG icons. The diagram shows how raw taxi data becomes semantic context, ontology-guided meaning, and an explainable Fabric Data Agent experience backed by Azure OpenAI.</p>
+    </header>
+
+    <section class="diagram-shell">
+      <div class="diagram">
+        <div class="zone fabric">
+          <div class="zone-title">
+            <img src="assets/microsoft-icons/fabric.svg" alt="Microsoft Fabric icon">
+            <span>Microsoft Fabric Workspace</span>
+          </div>
+        </div>
+
+        <svg class="wires" viewBox="0 0 1300 930" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#6a87a2"></path>
+            </marker>
+          </defs>
+          <path class="wire" marker-end="url(#arrow)" d="M 150 388 C 210 388, 214 388, 224 388"></path>
+          <path class="wire" marker-end="url(#arrow)" d="M 334 316 C 334 352, 334 372, 334 398"></path>
+          <path class="wire" marker-end="url(#arrow)" d="M 444 478 C 472 478, 480 478, 492 478"></path>
+          <path class="wire" marker-end="url(#arrow)" d="M 602 264 C 720 264, 720 264, 758 264"></path>
+          <path class="wire" marker-end="url(#arrow)" d="M 602 500 C 720 500, 720 500, 758 500"></path>
+          <path class="wire" marker-end="url(#arrow)" d="M 868 500 C 954 500, 964 430, 1072 394"></path>
+          <path class="wire" marker-end="url(#arrow)" d="M 868 264 C 970 264, 996 320, 1072 388"></path>
+          <path class="wire" marker-end="url(#arrow)" d="M 334 552 C 334 650, 466 760, 650 820"></path>
+          <path class="wire" marker-end="url(#arrow)" d="M 602 576 C 602 674, 628 744, 650 820"></path>
+          <path class="wire" marker-end="url(#arrow)" d="M 868 576 C 868 690, 776 760, 650 820"></path>
+          <text class="wire-label" x="242" y="368">ingest</text>
+          <text class="wire-label" x="352" y="382">prepare</text>
+          <text class="wire-label" x="506" y="462">compute</text>
+          <text class="wire-label" x="694" y="246">context</text>
+          <text class="wire-label" x="705" y="482">grounding</text>
+          <text class="wire-label" x="946" y="470">LLM assist</text>
+        </svg>
+
+        <article class="node source small">
+          <h2>External Data Sources</h2>
+          <p>NYC taxi trip files plus zone, payment, and rate-code reference data.</p>
+        </article>
+
+        <article class="node workspace">
+          <img class="icon" src="assets/microsoft-icons/group-workspace.svg" alt="Workspace icon">
+          <h2>Fabric Workspace</h2>
+          <p>Single managed environment for data engineering, modeling, ontology, and agent experience.</p>
+        </article>
+
+        <article class="node lakehouse">
+          <img class="icon" src="assets/microsoft-icons/lakehouse.svg" alt="Lakehouse icon">
+          <h2>Lakehouse</h2>
+          <p>Curated Delta tables for `trips`, `zones`, `payment_types`, `rate_codes`, and supporting dimensions.</p>
+        </article>
+
+        <article class="node notebook">
+          <img class="icon" src="assets/microsoft-icons/notebook.svg" alt="Notebook icon">
+          <h2>Notebook + Technical Layer</h2>
+          <p>Load, clean, profile, and document the data. This is where metadata and trust signals are added.</p>
+        </article>
+
+        <article class="node semantic">
+          <img class="icon" src="assets/microsoft-icons/semantic-model.svg" alt="Semantic model icon">
+          <h2>Semantic Model</h2>
+          <p>Spark SQL views and optional Power BI metrics standardize reusable business calculations.</p>
+        </article>
+
+        <article class="node ontology">
+          <img class="icon" src="assets/microsoft-icons/fabric.svg" alt="Fabric icon">
+          <h2>Ontology Layer</h2>
+          <p>Entity relationships and business rules add meaning, especially for caveats like missing cash-tip data.</p>
+        </article>
+
+        <article class="node agent">
+          <img class="icon" src="assets/microsoft-icons/data-agent.svg" alt="Data agent icon">
+          <h2>Fabric Data Agent</h2>
+          <p>Natural-language interface that uses semantic definitions and ontology context to answer analytically and explainably.</p>
+        </article>
+
+        <article class="node openai">
+          <img class="icon" src="assets/microsoft-icons/azure-openai.svg" alt="Azure OpenAI icon">
+          <h2>Azure OpenAI</h2>
+          <p>LLM capability behind Copilot-style reasoning used to generate grounded, user-facing explanations.</p>
+        </article>
+
+        <div class="outcome">
+          <div>
+            <strong>Outcome: explainable analytics in Fabric</strong>
+            <span>The mini hack demonstrates that correct metrics are not enough. With Microsoft Fabric items plus Azure AI support, the system can explain why a pattern appears and when the data can mislead a user.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="legend">
+        <span><i class="chip fabric"></i> Microsoft Fabric items</span>
+        <span><i class="chip azure"></i> Azure AI support</span>
+        <span><i class="chip data"></i> Managed data foundation</span>
+      </div>
+
+      <p class="footnote">Icons used here come from Microsoft’s official Fabric and Azure architecture icon packs downloaded into this repository for permitted documentation and diagram use.</p>
+    </section>
+  </div>
+</body>
+</html>
